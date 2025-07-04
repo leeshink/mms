@@ -81,20 +81,16 @@ router.beforeEach(async (to, from, next) => {
     
     // Keycloak 已初始化，检查认证状态
     const isAuthenticated = keycloakService.isAuthenticated()
-    console.log('路由守卫 - 认证状态:', isAuthenticated, '目标路径:', to.path)
     
     if (isAuthenticated) {
       userStore.initUser()
-      console.log('路由守卫 - 用户已认证，初始化用户状态完成')
       
       // 如果已认证且访问登录页，重定向到仪表板
       if (to.path === '/login') {
-        console.log('路由守卫 - 已认证用户访问登录页，重定向到 dashboard')
         next('/dashboard')
         return
       }
       // 已认证，允许访问其他页面
-      console.log('路由守卫 - 已认证，允许访问:', to.path)
       next()
       return
     }

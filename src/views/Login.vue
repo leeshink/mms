@@ -84,23 +84,19 @@ onMounted(async () => {
       
       if (authenticated) {
         // 已经认证，初始化用户信息并跳转
-        console.log('登录页 - Keycloak 初始化后发现已认证，准备跳转')
         userStore.initUser()
         ElMessage.success('登录成功')
         // 使用 nextTick 确保状态更新后再跳转
         await nextTick()
-        console.log('登录页 - 执行跳转到 dashboard')
         router.replace('/dashboard')
         return
       }
     } else if (keycloakService.isAuthenticated()) {
       // 已经认证，直接跳转
-      console.log('登录页 - 检测到已认证状态，准备跳转')
       userStore.initUser()
       ElMessage.success('登录成功')
       // 使用 nextTick 确保状态更新后再跳转
       await nextTick()
-      console.log('登录页 - 执行跳转到 dashboard')
       router.replace('/dashboard')
       return
     }
