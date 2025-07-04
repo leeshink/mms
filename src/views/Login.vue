@@ -24,7 +24,7 @@
         </el-divider>
         
         <el-button
-          type="text"
+          link
           size="small"
           @click="toggleLoginMode"
         >
@@ -76,7 +76,7 @@
         
         <div v-if="userStore.isKeycloakEnabled" class="back-to-sso">
           <el-button
-            type="text"
+            link
             size="small"
             @click="toggleLoginMode"
           >
