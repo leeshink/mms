@@ -98,7 +98,7 @@ const handleCommand = async (command: string) => {
 }
 
 // 初始化用户信息
-userStore.initFromStorage()
+userStore.initUser()
 </script>
 
 <style scoped>

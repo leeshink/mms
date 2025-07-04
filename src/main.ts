@@ -28,16 +28,4 @@ app.use(ElementPlus, {
 // 初始化用户状态
 const userStore = useUserStore()
 
-// 根据环境变量决定是否启用 Keycloak
-const keycloakEnabled = import.meta.env.VITE_KEYCLOAK_URL && 
-                       import.meta.env.VITE_KEYCLOAK_REALM && 
-                       import.meta.env.VITE_KEYCLOAK_CLIENT_ID
-
-userStore.setKeycloakEnabled(!!keycloakEnabled)
-
-// 如果不使用 Keycloak，从 localStorage 恢复用户状态
-if (!keycloakEnabled) {
-  userStore.initFromStorage()
-}
-
 app.mount('#app')

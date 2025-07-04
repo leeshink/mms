@@ -31,22 +31,20 @@ request.interceptors.response.use(
     if (error.response?.status === 401) {
       const userStore = useUserStore()
       
-      // 如果启用了 Keycloak，尝试刷新 token
-      if (userStore.isKeycloakEnabled) {
-        try {
-          const refreshed = await userStore.refreshToken()
-          if (refreshed) {
-            // Token 刷新成功，重试原请求
-            const token = userStore.getToken()
-            error.config.headers.Authorization = `Bearer ${token}`
-            return request(error.config)
-          }
-        } catch (refreshError) {
-          console.error('Token 刷新失败:', refreshError)
+      // 尝试刷新 Keycloak token
+      try {
+        const refreshed = await userStore.refreshToken()
+        if (refreshed) {
+          // Token 刷新成功，重试原请求
+          const token = userStore.getToken()
+          error.config.headers.Authorization = `Bearer ${token}`
+          return request(error.config)
         }
+      } catch (refreshError) {
+        console.error('Token 刷新失败:', refreshError)
       }
       
-      // Token 刷新失败或未启用 Keycloak，执行登出
+      // Token 刷新失败，执行登出
       userStore.logout()
       window.location.href = '/login'
     } else {
