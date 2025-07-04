@@ -61,9 +61,32 @@ const router = createRouter({
 })
 
 // 路由守卫
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore()
   
+  // 如果启用了 Keycloak，需要等待初始化完成
+  if (userStore.isKeycloakEnabled) {
+    try {
+      const keycloakService = (await import('@/services/keycloak')).default
+      
+      // 如果 Keycloak 还未初始化，且不是登录页面，则跳转到登录页面
+      if (!keycloakService.isInitialized() && to.path !== '/login') {
+        next('/login')
+        return
+      }
+      
+      // 如果已经认证，更新用户信息
+      if (keycloakService.isAuthenticated()) {
+        userStore.initUser()
+      }
+    } catch (error) {
+      console.error('路由守卫中 Keycloak 检查失败:', error)
+      // 如果 Keycloak 服务出错，回退到传统认证
+      userStore.setKeycloakEnabled(false)
+    }
+  }
+  
+  // 检查路由权限
   if (to.meta.requiresAuth !== false && !userStore.isLoggedIn) {
     next('/login')
   } else if (to.path === '/login' && userStore.isLoggedIn) {

@@ -62,7 +62,7 @@
         <el-table-column prop="merchantName" label="商户" width="120" />
         <el-table-column prop="type" label="类型" width="80">
           <template #default="{ row }">
-            <el-tag :type="getTypeColor(row.type)" size="small">
+            <el-tag :type="getTypeColor(row.type) as 'primary' | 'success' | 'warning' | 'danger' | 'info'" size="small">
               {{ getTypeText(row.type) }}
             </el-tag>
           </template>

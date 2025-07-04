@@ -77,7 +77,7 @@
             v-for="activity in recentActivities"
             :key="activity.id"
             :timestamp="activity.time"
-            :type="activity.type"
+            :type="activity.type as 'primary' | 'success' | 'warning' | 'danger' | 'info'"
           >
             {{ activity.content }}
           </el-timeline-item>

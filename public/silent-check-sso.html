@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Silent Check SSO</title>
+</head>
+<body>
+    <script>
+        // 这个页面用于 Keycloak 的静默 SSO 检查
+        // 它会在一个隐藏的 iframe 中加载，用于检查用户是否已经在 Keycloak 中登录
+        parent.postMessage(location.href, location.origin);
+    </script>
+</body>
+</html>

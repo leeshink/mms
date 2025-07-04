@@ -8,6 +8,7 @@ import zhCn from 'element-plus/es/locale/lang/zh-cn'
 
 import App from './App.vue'
 import router from './router'
+import { useUserStore } from './stores/user'
 import './assets/styles/main.css'
 
 const app = createApp(App)
@@ -17,10 +18,26 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
 }
 
-app.use(createPinia())
+const pinia = createPinia()
+app.use(pinia)
 app.use(router)
 app.use(ElementPlus, {
   locale: zhCn,
 })
+
+// 初始化用户状态
+const userStore = useUserStore()
+
+// 根据环境变量决定是否启用 Keycloak
+const keycloakEnabled = import.meta.env.VITE_KEYCLOAK_URL && 
+                       import.meta.env.VITE_KEYCLOAK_REALM && 
+                       import.meta.env.VITE_KEYCLOAK_CLIENT_ID
+
+userStore.setKeycloakEnabled(!!keycloakEnabled)
+
+// 如果不使用 Keycloak，从 localStorage 恢复用户状态
+if (!keycloakEnabled) {
+  userStore.initFromStorage()
+}
 
 app.mount('#app')
