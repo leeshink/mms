@@ -137,11 +137,18 @@ const loginRules: FormRules = {
 /**
  * SSO 登录
  */
-const handleSSOLogin = () => {
+const handleSSOLogin = async () => {
   loading.value = true
   loginStatus.value = { message: '正在跳转到 SSO 登录页面...', type: 'info' }
   
   try {
+    // 确保 Keycloak 已初始化
+    if (!keycloakService.isInitialized()) {
+      loginStatus.value = { message: '正在初始化 SSO 服务...', type: 'info' }
+      await keycloakService.init()
+    }
+    
+    // 执行登录
     userStore.loginWithKeycloak()
   } catch (error) {
     loading.value = false
@@ -195,21 +202,24 @@ onMounted(async () => {
   // 检查是否已经通过 Keycloak 认证
   if (userStore.isKeycloakEnabled) {
     try {
+      loginStatus.value = { message: '正在检查认证状态...', type: 'info' }
+      
       if (!keycloakService.isInitialized()) {
-        loginStatus.value = { message: '正在初始化认证服务...', type: 'info' }
         const authenticated = await keycloakService.init()
         
         if (authenticated) {
           // 已经认证，初始化用户信息并跳转
           userStore.initUser()
           ElMessage.success('登录成功')
-          router.push('/dashboard')
+          // 使用 replace 而不是 push，避免用户按返回键回到登录页
+          router.replace('/dashboard')
           return
         }
       } else if (keycloakService.isAuthenticated()) {
         // 已经认证，直接跳转
         userStore.initUser()
-        router.push('/dashboard')
+        ElMessage.success('登录成功')
+        router.replace('/dashboard')
         return
       }
       

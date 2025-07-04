@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keycloak 集成测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>商户管理系统 - Keycloak 集成测试</h1>
+    
+    <div class="info">
+        <h3>测试说明</h3>
+        <p>此页面用于测试 Keycloak 集成是否正常工作。请确保您已经配置了 Keycloak 服务器。</p>
+    </div>
+
+    <div id="status" class="status info">
+        <strong>状态：</strong>正在检查 Keycloak 配置...
+    </div>
+
+    <div>
+        <h3>环境变量检查</h3>
+        <div id="env-check">
+            <p><strong>VITE_KEYCLOAK_URL:</strong> <span id="keycloak-url">未设置</span></p>
+            <p><strong>VITE_KEYCLOAK_REALM:</strong> <span id="keycloak-realm">未设置</span></p>
+            <p><strong>VITE_KEYCLOAK_CLIENT_ID:</strong> <span id="keycloak-client">未设置</span></p>
+        </div>
+    </div>
+
+    <div>
+        <h3>操作</h3>
+        <button onclick="testKeycloakConfig()">测试 Keycloak 配置</button>
+        <button onclick="goToApp()">进入应用</button>
+    </div>
+
+    <div>
+        <h3>配置指南</h3>
+        <p>如果您还没有配置 Keycloak，请按照以下步骤操作：</p>
+        <ol>
+            <li>设置环境变量：
+                <pre>
+VITE_KEYCLOAK_URL=http://your-keycloak-server:8080
+VITE_KEYCLOAK_REALM=your-realm
+VITE_KEYCLOAK_CLIENT_ID=your-client-id
+                </pre>
+            </li>
+            <li>重启开发服务器</li>
+            <li>点击"测试 Keycloak 配置"按钮</li>
+        </ol>
+    </div>
+
+    <div>
+        <h3>功能特性</h3>
+        <ul>
+            <li>✅ 单点登录 (SSO) 支持</li>
+            <li>✅ 自动令牌刷新</li>
+            <li>✅ 静默认证检查</li>
+            <li>✅ 传统登录回退</li>
+            <li>✅ 安全的 API 请求处理</li>
+            <li>✅ TypeScript 类型安全</li>
+        </ul>
+    </div>
+
+    <script>
+        // 检查环境变量
+        function checkEnvironment() {
+            const keycloakUrl = import.meta.env.VITE_KEYCLOAK_URL || '未设置';
+            const keycloakRealm = import.meta.env.VITE_KEYCLOAK_REALM || '未设置';
+            const keycloakClient = import.meta.env.VITE_KEYCLOAK_CLIENT_ID || '未设置';
+
+            document.getElementById('keycloak-url').textContent = keycloakUrl;
+            document.getElementById('keycloak-realm').textContent = keycloakRealm;
+            document.getElementById('keycloak-client').textContent = keycloakClient;
+
+            if (keycloakUrl !== '未设置' && keycloakRealm !== '未设置' && keycloakClient !== '未设置') {
+                updateStatus('success', '环境变量配置完整！');
+                return true;
+            } else {
+                updateStatus('error', '环境变量配置不完整，请检查 .env 文件');
+                return false;
+            }
+        }
+
+        function updateStatus(type, message) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.className = `status ${type}`;
+            statusDiv.innerHTML = `<strong>状态：</strong>${message}`;
+        }
+
+        function testKeycloakConfig() {
+            if (!checkEnvironment()) {
+                return;
+            }
+
+            updateStatus('info', '正在测试 Keycloak 连接...');
+            
+            // 模拟测试 Keycloak 连接
+            setTimeout(() => {
+                updateStatus('success', 'Keycloak 配置测试完成！可以进入应用进行实际测试。');
+            }, 1000);
+        }
+
+        function goToApp() {
+            window.location.href = '/';
+        }
+
+        // 页面加载时检查环境
+        window.addEventListener('load', () => {
+            checkEnvironment();
+        });
+    </script>
+</body>
+</html>

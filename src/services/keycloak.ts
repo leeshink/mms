@@ -17,8 +17,12 @@ export class KeycloakService {
    */
   async init(): Promise<boolean> {
     try {
+      console.log('正在初始化 Keycloak...')
       const authenticated = await keycloak.init(keycloakInitOptions)
       this.initialized = true
+      
+      console.log('Keycloak 初始化完成，认证状态:', authenticated)
+      console.log('Token:', keycloak.token ? '已获取' : '未获取')
       
       // 设置 token 刷新
       this.setupTokenRefresh()
@@ -35,7 +39,7 @@ export class KeycloakService {
    */
   login(): void {
     keycloak.login({
-      redirectUri: window.location.origin + '/dashboard'
+      redirectUri: window.location.origin
     })
   }
 
