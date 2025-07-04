@@ -35,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Key } from '@element-plus/icons-vue'
@@ -86,7 +86,8 @@ onMounted(async () => {
         // 已经认证，初始化用户信息并跳转
         userStore.initUser()
         ElMessage.success('登录成功')
-        // 使用 replace 而不是 push，避免用户按返回键回到登录页
+        // 使用 nextTick 确保状态更新后再跳转
+        await nextTick()
         router.replace('/dashboard')
         return
       }
@@ -94,6 +95,8 @@ onMounted(async () => {
       // 已经认证，直接跳转
       userStore.initUser()
       ElMessage.success('登录成功')
+      // 使用 nextTick 确保状态更新后再跳转
+      await nextTick()
       router.replace('/dashboard')
       return
     }

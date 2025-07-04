@@ -75,33 +75,45 @@ router.beforeEach(async (to, from, next) => {
         return
       }
       // 如果是登录页面，让其继续，在登录页面中会进行初始化
-    } else {
-      // Keycloak 已初始化，检查认证状态
-      if (keycloakService.isAuthenticated()) {
-        userStore.initUser()
-        // 如果已认证且访问登录页，重定向到仪表板
-        if (to.path === '/login') {
-          next('/dashboard')
-          return
-        }
-      }
+      next()
+      return
     }
+    
+    // Keycloak 已初始化，检查认证状态
+    const isAuthenticated = keycloakService.isAuthenticated()
+    console.log('路由守卫 - 认证状态:', isAuthenticated, '目标路径:', to.path)
+    
+    if (isAuthenticated) {
+      userStore.initUser()
+      console.log('路由守卫 - 用户已认证，初始化用户状态完成')
+      
+      // 如果已认证且访问登录页，重定向到仪表板
+      if (to.path === '/login') {
+        console.log('路由守卫 - 已认证用户访问登录页，重定向到 dashboard')
+        next('/dashboard')
+        return
+      }
+      // 已认证，允许访问其他页面
+      console.log('路由守卫 - 已认证，允许访问:', to.path)
+      next()
+      return
+    }
+    
+    // 未认证，需要登录
+    if (to.path !== '/login') {
+      next('/login')
+      return
+    }
+    
+    next()
   } catch (error) {
     console.error('路由守卫中 Keycloak 检查失败:', error)
     // 如果 Keycloak 服务出错，跳转到登录页显示错误
     if (to.path !== '/login') {
       next('/login')
-      return
+    } else {
+      next()
     }
-  }
-  
-  // 检查路由权限
-  if (to.meta.requiresAuth !== false && !userStore.isLoggedIn) {
-    next('/login')
-  } else if (to.path === '/login' && userStore.isLoggedIn) {
-    next('/dashboard')
-  } else {
-    next()
   }
 })
 
